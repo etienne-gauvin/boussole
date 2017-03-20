@@ -21,6 +21,16 @@ html, body {
 .compass .needle {
 	width: 100%;
 	height: 100%;
-	transform: rotate(00deg);
-	transition: transform 100ms linear;
+	transform: rotate(0deg);
+	/*transition: transform 100ms linear;*/
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.compass .green.needle {
+	filter: hue-rotate(180deg);
+	display: none;
 }
