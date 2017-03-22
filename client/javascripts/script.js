@@ -1,11 +1,30 @@
 import Compass from './compass'
+import utils from './utils'
 
 document.addEventListener("DOMContentLoaded", (event) => {
 
-	const compass = new Compass
+	let deviceDirection = 0
+	let directionToTarget = 0
+
+	const compass = new Compass(document.querySelector('.compass'))
 	compass.start()
 
-	if ('geolocation' in navigator) {
+	if (window.DeviceOrientationEvent) {
+
+		window.addEventListener('deviceorientation', (event) => {
+		
+			deviceDirection = event.alpha
+
+			update()
+
+		})
+
+	}
+
+	else console.error("La boussole n'est pas disponible.")
+
+	if (window.navigator.geolocation) {
+
 		window.navigator.geolocation.watchPosition(
 			onPositionUpdateSuccess,
 			onPositionUpdateError,
@@ -15,17 +34,32 @@ document.addEventListener("DOMContentLoaded", (event) => {
 				timeout: 27000
 			}
 		)
+
 	}
-	else {
-		window.alert("Le service de géolocalisation n'est pas disponible.")
-	}
+	else console.error("Le service de géolocalisation n'est pas disponible.")
 
 	function onPositionUpdateSuccess(position) {
+
+		const a = { latitude: 48.117342, longitude: -1.708520 }
+		const b = { latitude: 48.117086, longitude: -1.696259 }
+
 		console.log(position)
+
+		// directionToTarget = utils.calculateDirectionToCoordinates(a, b);
+		directionToTarget = utils.calculateDirectionToCoordinates(position.coords, b);
+
+		update()
+
 	}
 
 	function onPositionUpdateError(error) {
 		console.log(error)
+	}
+
+	function update() {
+
+		compass.angle = deviceDirection + directionToTarget
+
 	}
 
 })

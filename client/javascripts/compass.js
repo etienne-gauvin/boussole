@@ -1,22 +1,24 @@
+import utils from './utils'
+
 export default class Compass {
 
-	constructor() {
+	constructor(element) {
 		
-		this.needleElement = document.querySelector('.compass .red.needle')
+		this.needleElement = element.querySelector('.red.needle')
 		
-		// Dernier angle donné
-		this.lastRawAngle = 0
+		// Last angle
+		this.targetedAngle = 0
 
-		// Angle visuel de l'aiguille
-		this.angle = 0
+		// Visual angle of the needle
+		this.visibleAngle = 0
 
-		// Vélocité de l'aiguille
+		// Needle velocity 
 		this.velocity = 0
 
-		// Dernier instant enregistré d'affichage d'une frame
-		this.previousTime = +new Date
+		// Last time a frame was updated
+		this.lastTime = +new Date
 
-		// Dernier instant enregistré de màj de la vélocité
+		// Last time the velocity was updated
 		this.lastVelocityUpdateTime = -Infinity
 
 	}
@@ -26,85 +28,70 @@ export default class Compass {
 	 */
 	start() {
 
-		if (window && 'DeviceOrientationEvent' in window) {
-			
-			window.addEventListener('deviceorientation', (event) =>
-
-				this.onCompassUpdate(event.alpha)
-
-			)
-
-		}
-		
-		else {
-
-			console.error("La boussole n'est pas disponible.")
-
-		}
-
-		window.requestAnimationFrame(this.updateNeedle.bind(this))
-		window.setInterval(this.updateVelocity.bind(this), 200)
+		window.requestAnimationFrame(this.update.bind(this))
 
 	}
 
 	/**
 	 * Nouvel angle donné par le device
+	 * @param <Number> angle
 	 */
-	onCompassUpdate(rawAngle) {
+	set angle(angle) {
 
 		const now = +new Date
 
-		// Différence entre les deux derniers angles
-		let diff = this.getDiffBetweenAngles(rawAngle, this.lastRawAngle)
+		// Difference between the last two angles
+		let diff = utils.calculateAngleBetweenDirections(angle, this.targetedAngle)
 
-		// Nouvel angle -+Infini
-		// pour éviter les transitions étranges
-		// (l'aiguille qui fait le tour du cadran, par ex.)
-		this.lastRawAngle += diff
+		// New angle -+Infini
+		// to avoid strange transitions
+		// (the needle doing a full circle between 350° and 10°, for example)
+		this.targetedAngle += diff
+
+	}
+
+	/**
+	* @return <Number>
+	 */
+	get angle() {
+
+		return this.targetedAngle
 
 	}
 
 	/** 
-	 * Mise à jour de la vélocité de l'aiguille
-	 * Séparée de la requestAnimationFrame pour ne pas surcharger
+	 * Updating velocity
+	 * Separate from display update for performance
 	 */
 	updateVelocity() {
 
-		const diff = this.getDiffBetweenAngles(this.lastRawAngle, this.angle)
+		const diff = utils.calculateAngleBetweenDirections(this.targetedAngle, this.visibleAngle)
 		
 		this.velocity = this.velocity * 0.5 + diff * 2
 
 	}
 
 	/**
-	 * Mise à jour visuelle de l'aiguille
+	 * Update visible angle of the needle
 	 * @param <Number> time
 	 */
-	updateNeedle(time) {
+	update(time) {
 
-		// Changement d'angle en fonction de la vélocité
-		this.angle += this.velocity * ((time - this.previousTime) / 1000)
+		this.visibleAngle += this.velocity * ((time - this.lastTime) / 1000)
 
-		// Application à l'élément visuel
-		this.needleElement.style.transform = `rotate(${this.angle}deg)`
+		this.needleElement.style.transform = `rotate(${this.visibleAngle}deg)`
 
-		this.previousTime = time
+		this.lastTime = time
 
-		window.requestAnimationFrame(this.updateNeedle.bind(this))
+		if (time - this.lastVelocityUpdateTime > 200) {
 
-	}
+			this.lastVelocityUpdateTime = time
+			
+			this.updateVelocity()
 
-	/**
-	 * Calcul de la différence entre les deux angles (360)
-	 * @param <Number> a
-	 * @param <Number> b
-	 * @return <Number>
-	 */
-	getDiffBetweenAngles(a, b) {
+		}
 
-		const c = a - b + 180
-
-		return (c - Math.floor(c / 360) * 360) - 180
+		window.requestAnimationFrame(this.update.bind(this))
 
 	}
 

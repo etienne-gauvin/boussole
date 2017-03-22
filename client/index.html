@@ -2,14 +2,24 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, user-scalable=no" />
+
 		<title>Boussole magique</title>
+		
 		<link rel="stylesheet" type="text/css" href="./style.css" />
 	</head>
 	<body>
+		<!-- <output class="error">
+			<p>
+				Impossible de trouver votre position géographique :(
+			</p>
+		</output> -->
+		
 		<div class="compass">
-			<img class="green needle" src="./images/needle.svg" />
-			<img class="red needle" src="./images/needle.svg" />
+			<img class="green needle" src="./images/needle.svg" alt="Aiguille de la boussole" />
+			<img class="red needle" src="./images/needle.svg" alt="Aiguille de la boussole" />
 		</div>
+		
 		<script src="./javascripts/socket.io.min.js"></script>
 		<script src="./javascripts/script.min.js"></script>
 	</body>
