@@ -1,11 +1,14 @@
-const app = require('express')()
+const port = process.env.npm_package_config_port
+
+const io = require('socket.io')()
+const express = require('express')
+const app = express()
 const http = require('http').Server(app)
 
-app.get('/', (req, res) =>
-  res.send('<h1>Hello world</h1>')
-)
+app.use(express.static('client'))
 
-http.listen(3000, () =>
-  console.log('listening on *:3000')
-)
-    
+http.listen(port, () => console.log(`Listening on *:${port}`))
+
+io.on('connection', (socket) => {
+	console.log('a user connected')
+})
