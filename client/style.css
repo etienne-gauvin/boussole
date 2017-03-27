@@ -6,8 +6,15 @@ html, body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+	flex-direction: column;
 
 	background-color: #8FD6FF;
+}
+
+select {
+	margin-top: 20px;
+	padding: 4px;
+	border: none;
 }
 
 .compass {
@@ -16,6 +23,7 @@ html, body {
 	height: 90vmin;
 	background-size: cover;
 	background-repeat: no-repeat;
+	position: relative;
 }
 
 .compass .needle {
