@@ -2,15 +2,15 @@
   "name": "boussole-magique",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "config": {
     "port": 3000
   },
   "scripts": {
     "start-n-watch": "concurrently --kill-others \"npm run start\" \"npm run watch\"",
-    "start": "node index.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "watchify --debug -t [ babelify --presets [ es2015 ] ] -e ./client/javascripts/script.js -o ./client/javascripts/script.min.js"
+    "watch": "watchify --debug -t [ babelify --presets [ es2015 ] ] -e ./client/javascripts/main.js -o ./client/javascripts/client.min.js"
   },
   "repository": {
     "type": "git",
