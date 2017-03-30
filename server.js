@@ -1,4 +1,6 @@
-const port = process.env.npm_package_config_port
+const port = process.env['npm_package_config_port_' + process.env.NODE_ENV || 'development']
+
+console.log(process.env.npm_package_config_port_development)
 
 const express = require('express')
 const app = express()

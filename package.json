@@ -4,7 +4,12 @@
   "description": "",
   "main": "server.js",
   "config": {
-    "port": 3000
+    "devport": 3000,
+    "prodport": 80,
+    "port": {
+      "development": 3000,
+      "production": 3000
+    }
   },
   "scripts": {
     "start-n-watch": "concurrently --kill-others \"npm run start\" \"npm run watch\"",
