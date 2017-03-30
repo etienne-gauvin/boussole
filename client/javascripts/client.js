@@ -7,14 +7,21 @@ export default class Client {
 		
 		this.socket = null
 
+		this.lastCoordinates = null
 		this.lastCoordinatesSentTime = -Infinity
 
 		this._position = 0
 		this._deviceDirection = 0
 		this._directionToTarget = 0
+		this._users = []
 
-		this.compass = new Compass(document.querySelector('.compass'))
+		this.usersElement = document.querySelector('select[name="users"]')
+
+		this.compass = new Compass('.compass .needle')
 		this.compass.start()
+
+		this.northCompass = new Compass('.compass .frame')
+		this.northCompass.start()
 
 	}
 
@@ -56,6 +63,16 @@ export default class Client {
 
 		this._position = position
 
+		if (position && position.coords) {
+
+			document.querySelector('output.position').innerHTML = `
+				lat: ${Math.floor(position.coords.latitude * 1000) / 1000}
+				<br />
+				lng: ${Math.floor(position.coords.longitude * 1000) / 1000}
+			`
+
+		}
+
 		this.update()
 
 	}
@@ -66,11 +83,107 @@ export default class Client {
 
 	}
 
+	set users(users) {
+
+		const select = this.usersElement
+		const disabledOption = select.querySelector('option:disabled')
+
+		if (this.socket) {
+			
+			const currentUser = users.indexOf(this.socket.id)
+
+			if (currentUser >= 0) {
+
+				users.splice(currentUser, 1)
+
+			}
+
+		}
+
+		if (!users || users.length === 0) {
+
+			select.setAttribute('disabled', 'true')
+			select.selectedItem = disabledOption
+			disabledOption.innerHTML = disabledOption.getAttribute('data-nobody-text')
+
+		}
+
+		else {
+
+			select.removeAttribute('disabled')
+			disabledOption.innerHTML = disabledOption.getAttribute('data-target-text')
+
+		}
+
+		const options = Array.from(select.querySelectorAll('option.user'))
+
+		for (let o in options) {
+
+			const option = options[o]
+			const user = users.find(user => user === option.value)
+
+			if (user === null) {
+
+				select.removeChild(option)
+
+			}
+
+		}
+
+		for (let u in users) {
+
+			const user = users[u]
+			
+			if (user !== this.socket.id) {
+
+				let option = options.find(option => user === option.value)
+
+				if (!option) {
+
+					option = document.createElement('option')
+					option.setAttribute('class', 'user')
+					option.setAttribute('value', user)
+					option.innerHTML = user
+
+					select.appendChild(option)
+
+				}
+
+			}
+
+		}
+
+		this._users = users
+
+	}
+
+	get users() {
+
+		return this._users
+
+	}
+
 	start() {
 
-		this.connectToServer()
-			.then(this.watchOrientation.bind(this), this.error.bind(this))
+		this.reset()
+
+		this.usersElement.addEventListener('change', event => {
+
+			const option = this.usersElement.options[this.usersElement.selectedIndex]
+
+			if (option && option.value) {
+
+				console.log('Target user:', option.value)
+
+				this.socket.emit('target user', option.value)
+
+			}
+
+		})
+
+		this.watchOrientation()
 			.then(this.watchPosition.bind(this), this.error.bind(this))
+			.then(this.connectToServer.bind(this), this.error.bind(this))
  
 	}
 
@@ -95,9 +208,17 @@ export default class Client {
 
 			})
 
-			this.socket.on('direction', (direction) => {
+			this.socket.on('users', (users) => {
 
-				console.info('Got new new direction from server:', direction)
+				console.info('Got new user list from server:', users)
+
+				this.users = users
+
+			})
+			
+			this.socket.on('direction to target', (direction) => {
+
+				console.info('Got new direction from server:', direction)
 
 				this.directionToTarget = direction
 
@@ -106,6 +227,9 @@ export default class Client {
 			this.socket.on('disconnect', () => {
 
 				console.warn(`Disconnected from server`)
+
+				this.users = []
+				this.directionToTarget = 0
 
 				window.clearInterval(intervalFunctionId)
 
@@ -215,13 +339,36 @@ export default class Client {
 
 		const position = this.position
 
-		if (this.connected && position) {
+		if (this.connected && position && position.coords) {
 
-			console.log('Sending new coords to server:', position.coords)
+			const coordinates = {
+				latitude: position.coords.latitude, 
+				longitude: position.coords.longitude
+			}
 
-			this.socket.emit('coordinates', position.coords)
+			if (!this.lastCoordinates ||
+				coordinates.latitude  !== this.lastCoordinates.latitude ||
+				coordinates.longitude !== this.lastCoordinates.longitude) {
+
+				this.lastCoordinates = coordinates
+
+				console.log('Sending new coords to server:', coordinates)
+
+				this.socket.emit('coordinates', coordinates)
+				
+			}
 
 		}
+
+	}
+
+	/**
+	 * 
+	 */
+	reset() {
+
+		this.users = []
+		this.directionToTarget = 0
 
 	}
 
@@ -239,8 +386,8 @@ export default class Client {
 
 		}
 
-
-
+		this.compass.angle = this.deviceDirection + this.directionToTarget
+		this.northCompass.angle = this.deviceDirection
 
 	}
 

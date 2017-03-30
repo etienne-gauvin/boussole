@@ -9,18 +9,18 @@
 		<link rel="stylesheet" type="text/css" href="./style.css" />
 	</head>
 	<body>
-		<!-- <output class="error">
-			Impossible de trouver votre position géographique :(
-		</output> -->
+		<output class="error"></output>
+		<output class="position"></output>
 		
 		<div class="compass">
-			<img class="green needle" src="./images/needle.svg" alt="Aiguille de la boussole" />
-			<img class="red needle" src="./images/needle.svg" alt="Aiguille de la boussole" />
+			<img class="frame" src="./images/frame.png" alt="Cadre de la boussole" />
+			<img class="needle" src="./images/needle.png" alt="Aiguille de la boussole" />
 		</div>
 
-		<select class="users">
-			<option disabled selected class="nobody">Personne n'est disponible</option>
-			<option disabled class="select">Sélectionner un utilisateur</option>
+		<select name="users">
+			<option disabled selected>
+				Personne n'est disponible
+			</option>
 		</select>
 		
 		<script src="./javascripts/socket.io.min.js"></script>

@@ -13,7 +13,7 @@
    viewBox="0 0 132.29166 132.29167"
    id="svg12"
    sodipodi:docname="needle.svg"
-   inkscape:export-filename="C:\Users\etienneg\boussole-magique\images\needle.png"
+   inkscape:export-filename="./needle.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    inkscape:version="0.92.1 r15371">
@@ -28,17 +28,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="716"
-     inkscape:window-height="480"
+     inkscape:window-width="1559"
+     inkscape:window-height="772"
      id="namedview14"
      showgrid="false"
      inkscape:zoom="0.472"
-     inkscape:cx="250"
-     inkscape:cy="250"
+     inkscape:cx="289.19492"
+     inkscape:cy="309.32203"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="40"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg12" />
+     inkscape:current-layer="g10" />
   <metadata
      id="metadata2">
     <rdf:RDF>
@@ -57,7 +57,8 @@
     <path
        d="m66.146 180.58-5.2917 50.271h10.583z"
        fill="#c35b5b"
-       id="path4" />
+       id="path4"
+       style="fill:#cf4f4f;fill-opacity:1" />
     <path
        d="m66.146 281.12 5.2917-50.271h-10.583z"
        fill="#bbb"

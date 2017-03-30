@@ -19,7 +19,7 @@ io.on('connection', (socket) => {
 		coords: null
 	}
 
-	socket.emit('users', getUserIds())
+	io.emit('users', getUserIds())
 
 	socket.on('target user', (id) => {
 
@@ -28,6 +28,20 @@ io.on('connection', (socket) => {
 			user.target = id
 
 		}
+
+	})
+
+	socket.on('coordinates', (coords) => {
+
+		console.log('Receiving new coordinates', coords)
+
+		const isNull = user.coords === null
+
+		user.coords = coords
+
+		if (isNull)
+			io.emit('users', getUserIds())
+
 
 	})
 
@@ -51,7 +65,7 @@ function sendAllDirections() {
 
 			const direction = calculateDirectionToCoordinates(user.coords, users[user.target].coords)
 
-			user.send('direction to target', direction)
+			user.socket.emit('direction to target', direction)
 
 		}
 

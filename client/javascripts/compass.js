@@ -2,9 +2,9 @@ import utils from './utils'
 
 export default class Compass {
 
-	constructor(element) {
+	constructor(needleSelector) {
 		
-		this.needleElement = element.querySelector('.red.needle')
+		this.needleElement = document.querySelector(needleSelector)
 		
 		// Last angle
 		this.targetedAngle = 0
@@ -12,7 +12,7 @@ export default class Compass {
 		// Visual angle of the needle
 		this.visibleAngle = 0
 
-		// Needle velocity 
+		// Needle velocity
 		this.velocity = 0
 
 		// Last time a frame was updated
